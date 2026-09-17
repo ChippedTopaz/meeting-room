@@ -3,5 +3,6 @@
   "systemName": "Hệ thống quản lý phòng họp",
   "timezone": "Asia/Ho_Chi_Minh",
   "bookingMode": "AUTO_CONFIRM",
-  "updatedAt": ""
+  "updatedAt": "",
+  "lastWriteTestAt": "2026-09-17T14:15:10.321Z"
 }
