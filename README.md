@@ -2,6 +2,8 @@
 
 Skeleton kiểm tra kết nối: **Netlify Frontend → HTTPS/JSON → Google Apps Script Web App → GitHub JSON Database**. Chưa có đăng nhập, đặt phòng, dashboard, Zalo hoặc phân quyền production.
 
+**Trạng thái M0:** Đã hoàn thành kiểm thử production theo xác nhận của người dùng. Kết quả PASS và các chi tiết checklist chưa được xác minh riêng được ghi tại [M0_ACCEPTANCE.md](M0_ACCEPTANCE.md).
+
 ## Cấu trúc
 
 - `index.html`, `css/main.css`, `js/`: frontend vanilla, không build, không dependency. `api.js` gọi GAS; `app.js` điều phối kiểm tra; `state.js` giữ trạng thái; `utils.js` hiển thị bằng textContent.
