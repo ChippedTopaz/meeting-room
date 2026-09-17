@@ -19,7 +19,8 @@ async function apiRequest(action, data = {}) {
     let result;
     try {
       result = await response.json();
-    } catch {
+    } catch (error) {
+      if (error.name === 'AbortError') throw error;
       throw new Error('GAS không trả JSON. Kiểm tra URL /exec và quyền truy cập deployment.');
     }
     if (result?.success === false) throw new Error(result.error?.message || 'API báo lỗi.');

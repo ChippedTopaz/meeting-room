@@ -1,38 +1,36 @@
 # M0 Acceptance
 
-M0 chưa được xác nhận PASS end-to-end. Checklist deployment dưới đây để trống đến khi có bằng chứng thực tế. Mock cục bộ không thay thế GAS/GitHub/Netlify thật.
+## Bằng chứng người dùng cung cấp trước sửa tối ưu
 
-## Kiểm tra trên deployment thật
+- GAS và frontend https://phonghop.netlify.app đã được deploy.
+- Local từng đạt 4/4 API.
+- Production: ping và getSystemInfo thành công; getRooms và getRequirements timeout 30 giây.
 
-- [ ] GAS doGet hoạt động qua URL /exec.
-- [ ] ping hoạt động qua POST JSON.
-- [ ] getSystemInfo đọc GitHub thành công, đúng tên hệ thống và timezone.
-- [ ] getRooms đọc GitHub thành công, trả rooms rỗng.
-- [ ] getRequirements đọc GitHub thành công, trả đủ bốn mục tiếng Việt.
-- [ ] testGithubWriteInternal chạy thủ công, ghi GitHub thành công; timestamp và commit được xác minh.
-- [ ] Frontend gọi GAS thành công: 4/4 API, response đọc được sau redirect, không lỗi CORS.
-- [ ] Netlify deploy thành công và layout dùng được trên desktop/mobile.
+Đây là báo cáo người dùng, không phải agent tái hiện lỗi trên trình duyệt. Bản tối ưu bên dưới chưa deploy; chưa xác nhận M0 PASS end-to-end.
+
+## Kiểm tra cục bộ bản tối ưu
+
+Lệnh: `node --test tests/m0.test.cjs`. Bảy test dùng mock, không gọi dịch vụ thật.
+
+- [x] Cú pháp JS/GS và JSON hợp lệ.
+- [x] Cold bootstrap đọc ba file qua một batch; warm hit không gọi GitHub; không lộ secret trong response/cache/log.
+- [x] Cache mất/hỏng/lỗi đọc vẫn fallback; lỗi GitHub không bị cache.
+- [x] Ghi danh mục thành công invalidate; ghi lỗi không invalidate; đọc booking bypass cache.
+- [x] Route chẩn đoán cũ còn hoạt động; action ghi/nhạy cảm và clear cache không public.
+- [x] Frontend tự gọi một bootstrap, chặn click trùng, xử lý lỗi không fallback sang bốn API.
+- [x] Giữ timeout 30 giây; abort lúc đọc response body không bị báo nhầm lỗi JSON.
+
+## Cần kiểm tra sau redeploy
+
+- [ ] GAS deployment hiện có đã cập nhật phiên bản mới, URL /exec giữ nguyên.
+- [ ] Netlify đã nhận frontend mới và giữ rule chặn database/gas.
+- [ ] Mở trang tạo đúng một POST bootstrap, hiển thị đủ ba danh mục.
+- [ ] Sau clearCatalogCacheInternal: miss, một log github_batch với ba status 200.
+- [ ] Gọi lại trong TTL: hit, không có GitHub request trong execution đó (trừ cache bị evict).
+- [ ] Đo clientMs/serverMs/Network, xác nhận không còn timeout trong các lần thử cold và warm.
+- [ ] Local và Netlify chạy cùng code/URL, đều đọc được JSON sau redirect.
+- [ ] Test ghi nội bộ được người dùng chủ động chạy và kiểm tra trên GitHub nếu cần; agent chưa chạy ghi thật.
+- [ ] Public API không expose users, audit logs, write hoặc clear cache.
 - [ ] Netlify trả 404 cho /database/users/users.json, /database/logs/audit_2026.json và /gas/Main.gs.
-- [ ] Public API từ chối getUsers, getAuditLogs, testWrite, writeJson, updateJson và testGithubWriteInternal.
-- [ ] Response public không chứa password hash, token hoặc secret.
 
-## Ghi nhận bằng chứng
-
-Điền ngày kiểm tra, người thực hiện, URL deployment, kết quả Network/Execution log và commit SHA test ghi; không ghi PAT hoặc credentials vào tài liệu.
-
-Chưa có GAS deployment URL hoặc GitHub credentials trong môi trường hiện tại. Chưa thực hiện ghi GitHub hay deploy Netlify.
-
-## Kiểm tra cục bộ đã thực hiện
-
-Các mục dưới đây được chạy bằng Node có sẵn với GAS/GitHub/fetch/DOM giả lập, không cài dependency và không truy cập dịch vụ thật:
-
-- [x] Parse cú pháp toàn bộ JS/GS và bảy file JSON.
-- [x] doGet và bốn route đọc trả envelope mong đợi; lọc token/passwordHash khỏi system info.
-- [x] Action cấm bị từ chối trước khi gọi GitHub; JSON lỗi và request sai định dạng bị từ chối.
-- [x] Tự thêm database/ đúng một lần; chặn đường dẫn traversal.
-- [x] Hàm ghi nội bộ GET SHA rồi PUT đúng branch; timestamp và tiếng Việt giữ nguyên qua base64.
-- [x] Lỗi GitHub được làm sạch; conflict có mã lỗi riêng.
-- [x] Frontend kiểm tra URL, POST text/plain, xử lý lỗi mạng/timeout/JSON/API.
-- [x] Điều phối UI giả lập hiển thị 4/4 khi thành công, 3/4 khi một API lỗi, bật lại nút sau kiểm tra.
-
-Chưa kiểm tra hiển thị bằng trình duyệt thật, CORS thực tế hoặc rule Netlify trên deployment.
+Ghi ngày kiểm tra, execution và timing thực tế; không ghi token. Cache danh mục không chứng minh booking concurrency an toàn, chưa triển khai booking ở M0.

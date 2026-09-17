@@ -19,8 +19,7 @@ function databasePath_(path) {
   return 'database/' + parts.map(encodeURIComponent).join('/');
 }
 
-function githubRequest_(method, path, payload) {
-  var settings = githubSettings_();
+function githubRequestOptions_(method, path, payload, settings) {
   var url = 'https://api.github.com/repos/' + encodeURIComponent(settings.GITHUB_OWNER) +
     '/' + encodeURIComponent(settings.GITHUB_REPO) + '/contents/' + databasePath_(path);
   var options = {
@@ -36,12 +35,25 @@ function githubRequest_(method, path, payload) {
     options.contentType = 'application/json';
     options.payload = JSON.stringify(payload);
   }
+  options.url = url;
+  return options;
+}
+
+function githubRequest_(method, path, payload) {
+  var options = githubRequestOptions_(method, path, payload, githubSettings_());
+  var startedAt = Date.now();
   var response;
   try {
-    response = UrlFetchApp.fetch(url, options);
+    response = UrlFetchApp.fetch(options.url, options);
   } catch (error) {
     throw appError_('GITHUB_NETWORK_ERROR', 'Không thể kết nối GitHub.');
   }
+  console.log(JSON.stringify({event: 'github_fetch', path: databasePath_(path),
+    method: method, elapsedMs: Date.now() - startedAt, status: response.getResponseCode()}));
+  return githubParseResponse_(response);
+}
+
+function githubParseResponse_(response) {
   var status = response.getResponseCode();
   if (status < 200 || status >= 300) {
     // M3 may add conflict retry here, with a fresh read and data reconciliation.
@@ -56,7 +68,10 @@ function githubRequest_(method, path, payload) {
 }
 
 function githubGetFile(path) {
-  var file = githubRequest_('get', path);
+  return githubDecodeFile_(githubRequest_('get', path));
+}
+
+function githubDecodeFile_(file) {
   if (file.type !== 'file' || file.encoding !== 'base64' || typeof file.content !== 'string' || !file.sha) {
     throw appError_('GITHUB_INVALID_FILE', 'File phải là JSON nhỏ, mã hóa base64.');
   }
@@ -77,10 +92,15 @@ function githubUpdateFile(path, content, sha, commitMessage) {
   if (typeof content !== 'string' || !sha || !commitMessage) {
     throw appError_('INVALID_WRITE', 'Cần nội dung, SHA hiện tại và commit message.');
   }
-  return githubRequest_('put', path, {
+  var result = githubRequest_('put', path, {
     message: commitMessage, sha: sha,
     content: Utilities.base64Encode(content, Utilities.Charset.UTF_8)
   });
+  if (['database/config/system.json', 'database/rooms/rooms.json',
+      'database/config/requirements.json'].indexOf(databasePath_(path)) !== -1) {
+    invalidateCatalogCache_();
+  }
+  return result;
 }
 
 function githubWriteJson(path, data, commitMessage) {
@@ -88,4 +108,32 @@ function githubWriteJson(path, data, commitMessage) {
   // This is not a transactional read-modify-write; M3 must handle concurrent writers.
   var current = githubGetFile(path);
   return githubUpdateFile(path, JSON.stringify(data, null, 2) + '\n', current.sha, commitMessage);
+}
+
+// One GAS execution, three GitHub requests issued as a batch on cache miss.
+// Generic database reads and writes remain uncached, including future bookings.
+function githubGetJsonBatch_(paths) {
+  var settings = githubSettings_();
+  var requests = paths.map(function (path) {
+    return githubRequestOptions_('get', path, null, settings);
+  });
+  var startedAt = Date.now();
+  var responses;
+  try {
+    responses = UrlFetchApp.fetchAll(requests);
+  } catch (error) {
+    console.log(JSON.stringify({event: 'github_batch_error', elapsedMs: Date.now() - startedAt}));
+    throw appError_('GITHUB_NETWORK_ERROR', 'Cannot reach GitHub.');
+  }
+  console.log(JSON.stringify({event: 'github_batch', count: paths.length,
+    elapsedMs: Date.now() - startedAt,
+    statuses: responses.map(function (response) { return response.getResponseCode(); })}));
+  return responses.map(function (response) {
+    var file = githubDecodeFile_(githubParseResponse_(response));
+    try {
+      return JSON.parse(file.content);
+    } catch (error) {
+      throw appError_('DATABASE_INVALID_JSON', 'Invalid database JSON.');
+    }
+  });
 }
