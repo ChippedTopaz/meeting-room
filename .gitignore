@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+node_modules/
+.netlify/
+.clasp.json
+.clasprc.json
+Thumbs.db
+.DS_Store

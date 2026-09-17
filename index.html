@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#165a72">
+  <title>Hệ thống quản lý phòng họp</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="manifest" href="manifest.json">
+  <script src="js/api.js" defer></script>
+  <script src="js/state.js" defer></script>
+  <script src="js/utils.js" defer></script>
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">M0 · Kiểm tra kiến trúc</p>
+      <h1>Hệ thống quản lý phòng họp</h1>
+      <p>Kiểm tra kết nối Frontend → Google Apps Script → GitHub JSON.</p>
+      <button id="check-connection" type="button">Kiểm tra kết nối</button>
+      <p id="connection-status" role="status" aria-live="polite">Chưa kiểm tra kết nối.</p>
+    </header>
+    <div class="grid">
+      <section aria-labelledby="gas-heading"><h2 id="gas-heading">GAS API status</h2><pre id="gas-status">Chưa có dữ liệu.</pre></section>
+      <section aria-labelledby="system-heading"><h2 id="system-heading">System info</h2><pre id="system-info">Chưa có dữ liệu.</pre></section>
+      <section aria-labelledby="rooms-heading"><h2 id="rooms-heading">Rooms</h2><pre id="rooms">Chưa có dữ liệu.</pre></section>
+      <section aria-labelledby="requirements-heading"><h2 id="requirements-heading">Requirements</h2><pre id="requirements">Chưa có dữ liệu.</pre></section>
+    </div>
+    <footer>M0 chỉ kiểm tra kết nối; chưa có đăng nhập hoặc đặt phòng.</footer>
+  </main>
+</body>
+</html>

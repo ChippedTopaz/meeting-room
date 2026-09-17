@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "requirements": [
+    {"id":"REQ-001","name":"Nước uống","active":true},
+    {"id":"REQ-002","name":"Đồ ăn nhẹ","active":true},
+    {"id":"REQ-003","name":"Micro không dây","active":true},
+    {"id":"REQ-004","name":"Hỗ trợ kỹ thuật","active":true}
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "Hệ thống quản lý phòng họp",
+  "short_name": "Phòng họp",
+  "lang": "vi",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f2f6f8",
+  "theme_color": "#165a72"
+}

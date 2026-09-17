@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "systemName": "Hệ thống quản lý phòng họp",
+  "timezone": "Asia/Ho_Chi_Minh",
+  "bookingMode": "AUTO_CONFIRM",
+  "updatedAt": ""
+}

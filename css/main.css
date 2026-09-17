@@ -1,0 +1,18 @@
+:root { font-family: system-ui, sans-serif; color: #173340; background: #f2f6f8; line-height: 1.6; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { max-width: 1080px; margin: auto; padding: 40px 20px; }
+header { margin-bottom: 28px; }
+h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.2; margin: 8px 0 18px; }
+.eyebrow { color: #165a72; font-weight: 700; }
+button { background: #165a72; color: white; border: 0; border-radius: 8px; padding: 13px 20px; font: inherit; font-weight: 600; cursor: pointer; }
+button:hover { background: #10465a; }
+button:focus-visible { outline: 3px solid #c37415; outline-offset: 4px; }
+button:disabled { opacity: .6; cursor: wait; }
+#connection-status { min-height: 26px; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+section { min-width: 0; padding: 22px; background: white; border: 1px solid #d9e4ea; border-radius: 12px; }
+h2 { font-size: 1.1rem; margin: 0 0 16px; }
+pre { margin: 0; font-size: .9rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+footer { margin-top: 28px; color: #506673; font-size: .9rem; }
+@media (max-width: 640px) { .grid { grid-template-columns: 1fr; } main { padding-top: 24px; } }
