@@ -1,4 +1,4 @@
-const GAS_API_URL = 'PASTE_GAS_WEB_APP_EXEC_URL_HERE';
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxgkgn7MuSkDkthxCVC9OGCUmdxfqXWKLwVOYbyujItJqkrHHny2yHegk9jLVxl-JCY/exec';
 
 async function apiRequest(action, data = {}) {
   if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(GAS_API_URL)) {
